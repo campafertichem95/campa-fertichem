@@ -440,7 +440,7 @@ function HeroSection() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
         <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ duration: 0.7 }} className="max-w-2xl">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-4">
-            Nourishing Growth.<br />Enabling Tomorrow.
+            Nourishing Growth Fertilizer.<br />Enabling Tomorrow.
           </h1>
           <p className="text-lg sm:text-xl text-green-100 mb-8">
             Quality Fertilizer Solutions for Better Crop Nutrition.
