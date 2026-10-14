@@ -43,12 +43,17 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2 text-green-300">
                 <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-green-400" />
-                <span>Taloja, Navi Mumbai, Maharashtra, India</span>
+                <span>CAMPA FERTICHEM
+B201 Devdrishti, Chs Plot No. 62,  Navade Phase 
+2,Taloja Navi Mumbai.
+Email ID : campafertichem@gmail.com
+Customer Care No. : +917276772958/9922160100
+, Maharashtra, India</span>
               </li>
               <li>
-                <a href="tel:+91XXXXXXXXXX" className="flex items-center gap-2 text-green-300 hover:text-white transition-colors">
+                <a href="tel:+917276772958" className="flex items-center gap-2 text-green-300 hover:text-white transition-colors">
                   <Phone className="h-4 w-4 text-green-400" />
-                  <span>+91 XXXXX XXXXX</span>
+                  <span>+91 72767 72958</span>
                 </a>
               </li>
               <li>

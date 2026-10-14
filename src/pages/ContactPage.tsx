@@ -112,7 +112,7 @@ export default function ContactPage() {
                 label: 'Address',
                 value: 'B201 Devdrishti CHS, Plot No. 62, Navade Phase 2, Taloja, Navi Mumbai',
               },
-              { icon: Phone, label: 'Phone',          value: '+91 XXXXX XXXXX',          href: 'tel:+91XXXXXXXXXX' },
+              { icon: Phone, label: 'Phone',          value: '+91 7276772958',          href: 'tel:+91 7276772958' },
               { icon: Mail,  label: 'Email',          value: 'info@campafertichem.com',  href: 'mailto:info@campafertichem.com' },
               { icon: Clock, label: 'Business Hours', value: 'Mon–Sat: 9:00 AM – 6:00 PM' },
             ].map(({ icon: Icon, label, value, href }: any) => (
