@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, Leaf } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -35,9 +35,12 @@ export default function Header() {
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2 font-bold text-green-700 text-xl">
-            <Leaf className="h-7 w-7 text-green-600" />
-            <span>Campa Fertichem</span>
+          <Link to="/" className="flex items-center">
+            <img
+              src="/CF_Logo_cropped_1200w_1.png"
+              alt="Campa Fertichem"
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
