@@ -150,7 +150,7 @@ export default function AdminCategoryFormPage() {
             <Label>Sort Order</Label>
             <Input type="number" {...register('sort_order', { valueAsNumber: true })} className="mt-1 w-24" />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
             <div>
               <p className="font-medium text-sm">Active</p>
               <p className="text-xs text-gray-500">Show this category on the website</p>

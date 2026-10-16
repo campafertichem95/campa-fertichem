@@ -185,16 +185,33 @@ function CategorySection({
   const [current, setCurrent] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const VISIBLE = 4
+  const [visibleCount, setVisibleCount] = useState(4)
+
+  useEffect(() => {
+    const update = () => {
+      if (window.innerWidth < 640) setVisibleCount(1)
+      else if (window.innerWidth < 1024) setVisibleCount(2)
+      else setVisibleCount(4)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  const VISIBLE = visibleCount
   const total = categories.length
   const canPrev = current > 0
   const canNext = current < total - VISIBLE
+
+  useEffect(() => {
+    setCurrent(0)
+  }, [visibleCount])
 
   const go = useCallback(
     (dir: 1 | -1) => {
       setCurrent(c => Math.min(Math.max(c + dir, 0), Math.max(total - VISIBLE, 0)))
     },
-    [total]
+    [total, VISIBLE]
   )
 
   const startTimer = useCallback(() => {
@@ -250,13 +267,13 @@ function CategorySection({
             onClick={() => go(-1)}
             disabled={!canPrev}
             aria-label="Previous category"
-            className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white shadow-lg border-2 border-gray-100 flex items-center justify-center text-gray-500 hover:text-green-700 hover:border-green-400 hover:scale-110 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white shadow-lg border-2 border-gray-100 flex items-center justify-center text-gray-500 hover:text-green-700 hover:border-green-400 hover:scale-110 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
 
           {/* Viewport */}
-          <div className="overflow-hidden mx-6">
+          <div className="overflow-hidden mx-12">
             <motion.div
               className="flex gap-5"
               animate={{ x: prefersReduced ? 0 : `-${current * (100 / VISIBLE)}%` }}
@@ -278,7 +295,7 @@ function CategorySection({
             onClick={() => go(1)}
             disabled={!canNext}
             aria-label="Next category"
-            className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white shadow-lg border-2 border-gray-100 flex items-center justify-center text-gray-500 hover:text-green-700 hover:border-green-400 hover:scale-110 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white shadow-lg border-2 border-gray-100 flex items-center justify-center text-gray-500 hover:text-green-700 hover:border-green-400 hover:scale-110 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -318,7 +335,21 @@ function CategorySection({
 function FeaturedProducts({ products }: { products: Product[] }) {
   const [idx, setIdx] = useState(0)
   const prefersReduced = useReducedMotion()
-  const visible = 3
+  const [visible, setVisible] = useState(3)
+
+  useEffect(() => {
+    const update = () => {
+      if (window.innerWidth < 640) setVisible(1)
+      else if (window.innerWidth < 1024) setVisible(2)
+      else setVisible(3)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  useEffect(() => { setIdx(0) }, [visible])
+
   const max = Math.max(0, products.length - visible)
 
   if (!products.length) return null

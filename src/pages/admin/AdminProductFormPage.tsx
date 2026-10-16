@@ -199,7 +199,7 @@ export default function AdminProductFormPage() {
         {/* Settings */}
         <div className="bg-white rounded-xl border p-6 space-y-4">
           <h2 className="font-semibold text-gray-900">Settings</h2>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
             <div>
               <p className="font-medium text-sm">Published</p>
               <p className="text-xs text-gray-500">Visible to public visitors</p>
@@ -208,7 +208,7 @@ export default function AdminProductFormPage() {
               <Switch checked={field.value} onCheckedChange={field.onChange} />
             )} />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
             <div>
               <p className="font-medium text-sm">Featured</p>
               <p className="text-xs text-gray-500">Show on homepage carousel</p>
