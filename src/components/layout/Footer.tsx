@@ -74,6 +74,10 @@ export default function Footer() {
 
         <div className="border-t border-green-800 mt-10 pt-6 text-center text-sm text-green-400">
           <p>© {new Date().getFullYear()} Campa Fertichem. All rights reserved.</p>
+          <p className="mt-1">
+            Designed by{' '}
+            <a href="mailto:design.kraftmedia@gmail.com" className="hover:text-white transition-colors">design.kraftmedia@gmail.com</a>
+          </p>
         </div>
       </div>
     </footer>
