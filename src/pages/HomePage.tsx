@@ -15,10 +15,12 @@ function CategoryCard({
   cat,
   index,
   productCount,
+  visibleCount,
 }: {
   cat: Category
   index: number
   productCount: number
+  visibleCount: number
 }) {
   const prefersReduced = useReducedMotion()
   const cardRef = useRef<HTMLDivElement>(null)
@@ -30,9 +32,9 @@ function CategoryCard({
   const [hovered, setHovered] = useState(false)
 
   // Smooth spring for tilt
-  const rotateX = useSpring(useTransform(rawY, [-0.5, 0.5], [12, -12]), { stiffness: 300, damping: 30 })
-  const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-12, 12]), { stiffness: 300, damping: 30 })
-  const scale   = useSpring(hovered ? 1.04 : 1, { stiffness: 300, damping: 25 })
+  const rotateX = useSpring(useTransform(rawY, [-0.5, 0.5], [10, -10]), { stiffness: 300, damping: 30 })
+  const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-10, 10]), { stiffness: 300, damping: 30 })
+  const scale   = useSpring(hovered ? 1.03 : 1, { stiffness: 300, damping: 25 })
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (prefersReduced || !cardRef.current) return
@@ -41,7 +43,6 @@ function CategoryCard({
     const y = (e.clientY - rect.top)  / rect.height - 0.5
     rawX.set(x)
     rawY.set(y)
-    // lens position as percentage
     lensX.set(((e.clientX - rect.left) / rect.width)  * 100)
     lensY.set(((e.clientY - rect.top)  / rect.height) * 100)
   }
@@ -57,12 +58,15 @@ function CategoryCard({
   return (
     <motion.div
       key={cat.id}
-      className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/4"
-      initial={{ opacity: 0, y: 40 }}
+      className="flex-shrink-0"
+      style={{
+        width: `calc(${100 / visibleCount}% - ${((visibleCount - 1) * 20) / visibleCount}px)`,
+        perspective: 900
+      }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
-      style={{ perspective: 900 }}
     >
       <Link to={`/products?category=${cat.slug}`} className="block h-full" tabIndex={0}>
         <motion.div
@@ -71,7 +75,7 @@ function CategoryCard({
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={handleMouseLeave}
           style={prefersReduced ? {} : { rotateX, rotateY, scale, transformStyle: 'preserve-3d' }}
-          className="relative rounded-2xl overflow-hidden bg-green-100 shadow-md cursor-pointer"
+          className="relative rounded-2xl overflow-hidden bg-green-100 shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer h-full"
         >
           {/* ── Image with zoom-in on hover ── */}
           <div className="aspect-[3/4] overflow-hidden">
@@ -80,8 +84,8 @@ function CategoryCard({
                 src={cat.image_path}
                 alt={cat.name}
                 loading="lazy"
-                animate={prefersReduced ? {} : { scale: hovered ? 1.18 : 1 }}
-                transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
+                animate={prefersReduced ? {} : { scale: hovered ? 1.12 : 1 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -91,67 +95,56 @@ function CategoryCard({
             )}
           </div>
 
-          {/* ── Gradient overlay — darkens more on hover ── */}
+          {/* ── Premium Gradient overlay — मजकूर स्पष्ट दिसण्यासाठी सुधारीत ── */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
             animate={{ background: hovered
-              ? 'linear-gradient(to top, rgba(2,44,20,0.95) 0%, rgba(2,44,20,0.45) 55%, rgba(0,0,0,0.1) 100%)'
-              : 'linear-gradient(to top, rgba(2,44,20,0.82) 0%, rgba(2,44,20,0.25) 55%, rgba(0,0,0,0) 100%)'
+              ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.1) 100%)'
+              : 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0) 100%)'
             }}
             transition={{ duration: 0.35 }}
           />
 
-          {/* ── Magnetic zoom-lens spotlight ── */}
-          {hovered && !prefersReduced && (
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              style={{
-                background: `radial-gradient(circle 90px at ${lensX.get()}% ${lensY.get()}%, rgba(255,255,255,0.13) 0%, transparent 70%)`,
-              }}
-            />
-          )}
-
           {/* ── Product count badge ── */}
           <motion.div
-            className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur-sm text-green-800 text-xs font-bold px-2.5 py-1 rounded-full shadow"
+            className="absolute top-3.5 right-3.5 flex items-center gap-1.5 bg-white/95 backdrop-blur-md text-gray-800 text-xs font-semibold px-3 py-1 rounded-full shadow-sm"
             initial={{ scale: 0, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ type: 'spring', delay: index * 0.08 + 0.3 }}
           >
-            <Package className="h-3 w-3" />
+            <Package className="h-3.5 w-3.5 text-green-700" />
             {productCount} Products
           </motion.div>
 
-          {/* ── Bottom text — slides up on hover ── */}
-          <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+          {/* ── Bottom text ── */}
+          <div className="absolute bottom-0 left-0 right-0 p-5 text-white z-10">
             <motion.h3
-              className="font-bold text-base leading-tight"
-              animate={{ y: hovered ? -4 : 0 }}
-              transition={{ duration: 0.3 }}
+              className="font-bold text-base uppercase tracking-wider leading-snug drop-shadow-md"
+              animate={{ y: hovered ? -3 : 0 }}
+              transition={{ duration: 0.25 }}
             >
               {cat.name}
             </motion.h3>
 
             {/* Description — fades in on hover */}
-            <motion.p
-              className="text-xs text-green-200 mt-1 line-clamp-2"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: hovered ? 1 : 0, height: hovered ? 'auto' : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {cat.description}
-            </motion.p>
+            {cat.description && (
+              <motion.p
+                className="text-xs text-gray-200 mt-1 line-clamp-2"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: hovered ? 1 : 0, height: hovered ? 'auto' : 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                {cat.description}
+              </motion.p>
+            )}
 
-            {/* Explore pill — slides up on hover */}
+            {/* Explore pill */}
             <motion.span
-              className="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold bg-green-500/80 backdrop-blur-sm px-3 py-1 rounded-full text-white"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 10 }}
-              transition={{ duration: 0.28 }}
+              className="inline-flex items-center gap-1 mt-2.5 text-xs font-semibold text-green-300"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 6 }}
+              transition={{ duration: 0.25 }}
             >
               Explore Category
               <ArrowRight className="h-3 w-3" />
@@ -162,8 +155,8 @@ function CategoryCard({
           <motion.div
             className="absolute inset-0 rounded-2xl pointer-events-none"
             animate={{ boxShadow: hovered
-              ? '0 0 0 2px rgba(74,222,128,0.6), 0 24px 48px rgba(0,0,0,0.35)'
-              : '0 0 0 0px transparent, 0 4px 12px rgba(0,0,0,0.1)'
+              ? '0 0 0 2px rgba(74,222,128,0.5), 0 20px 35px rgba(0,0,0,0.3)'
+              : '0 0 0 0px transparent, 0 4px 12px rgba(0,0,0,0.08)'
             }}
             transition={{ duration: 0.3 }}
           />
@@ -184,7 +177,6 @@ function CategorySection({
   const prefersReduced = useReducedMotion()
   const [current, setCurrent] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
   const [visibleCount, setVisibleCount] = useState(4)
 
   useEffect(() => {
@@ -221,8 +213,8 @@ function CategorySection({
         const next = c + 1
         return next > total - VISIBLE ? 0 : next
       })
-    }, 3800)
-  }, [prefersReduced, total])
+    }, 4000)
+  }, [prefersReduced, total, VISIBLE])
 
   useEffect(() => {
     startTimer()
@@ -256,28 +248,30 @@ function CategorySection({
           </p>
         </motion.div>
 
-        {/* Slider */}
+        {/* Slider Container */}
         <div
           className="relative"
           onMouseEnter={pause}
           onMouseLeave={resume}
         >
-          {/* Prev */}
+          {/* Prev Button */}
           <button
             onClick={() => go(-1)}
             disabled={!canPrev}
             aria-label="Previous category"
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white shadow-lg border-2 border-gray-100 flex items-center justify-center text-gray-500 hover:text-green-700 hover:border-green-400 hover:scale-110 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+            className="absolute -left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white shadow-xl border border-gray-100 flex items-center justify-center text-gray-700 hover:text-green-700 hover:scale-110 transition-all disabled:opacity-0 disabled:pointer-events-none"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
 
           {/* Viewport */}
-          <div className="overflow-hidden mx-12">
+          <div className="overflow-hidden">
             <motion.div
               className="flex gap-5"
-              animate={{ x: prefersReduced ? 0 : `-${current * (100 / VISIBLE)}%` }}
-              transition={{ type: 'spring', stiffness: 240, damping: 28 }}
+              animate={{
+                x: prefersReduced ? 0 : `calc(-${current} * (${100 / VISIBLE}% + ${(20 - 20 / VISIBLE)}px))`
+              }}
+              transition={{ type: 'spring', stiffness: 220, damping: 26 }}
             >
               {categories.map((cat, i) => (
                 <CategoryCard
@@ -285,17 +279,18 @@ function CategorySection({
                   cat={cat}
                   index={i}
                   productCount={productCounts[cat.id] ?? 0}
+                  visibleCount={VISIBLE}
                 />
               ))}
             </motion.div>
           </div>
 
-          {/* Next */}
+          {/* Next Button */}
           <button
             onClick={() => go(1)}
             disabled={!canNext}
             aria-label="Next category"
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white shadow-lg border-2 border-gray-100 flex items-center justify-center text-gray-500 hover:text-green-700 hover:border-green-400 hover:scale-110 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+            className="absolute -right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white shadow-xl border border-gray-100 flex items-center justify-center text-gray-700 hover:text-green-700 hover:scale-110 transition-all disabled:opacity-0 disabled:pointer-events-none"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
