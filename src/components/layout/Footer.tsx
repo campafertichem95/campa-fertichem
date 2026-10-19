@@ -30,15 +30,38 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-white mb-4">Products</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/products" className="text-green-300 hover:text-white transition-colors">All Products</Link></li>
-              <li><Link to="/products?category=PLANT GROWTH REGULATORS" className="text-green-300 hover:text-white transition-colors">Plant Growth Regulators</Link></li>
-              <li><Link to="/products?category=NPK FORTIFIED LIQUID FERTILIZER" className="text-green-300 hover:text-white transition-colors">NPK Fortifiled Liquid Fertilizer</Link></li>
-              <li><Link to="/products?category=MICRONUTRIENTS" className="text-green-300 hover:text-white transition-colors">Micronutrients</Link></li>
-              <li><Link to="/products?category=BIO FERTILIZERS" className="text-green-300 hover:text-white transition-colors">Bio fertilizers</Link></li>
-            <li><Link to="/products?category=NPK SPECIAL" className="text-green-300 hover:text-white transition-colors">NPK Special</Link></li>
+              <li>
+                <Link to="/products" className="text-green-300 hover:text-white transition-colors">
+                  All Products
+                </Link>
+              </li>
+              <li>
+                <Link to="/products?category=plant-growth-regulators" className="text-green-300 hover:text-white transition-colors">
+                  Plant Growth Regulators
+                </Link>
+              </li>
+              <li>
+                <Link to="/products?category=npk-fortified-liquid-fertilizer" className="text-green-300 hover:text-white transition-colors">
+                  NPK Fortified Liquid Fertilizer
+                </Link>
+              </li>
+              <li>
+                <Link to="/products?category=micronutrients" className="text-green-300 hover:text-white transition-colors">
+                  Micronutrients
+                </Link>
+              </li>
+              <li>
+                <Link to="/products?category=bio-fertilizers" className="text-green-300 hover:text-white transition-colors">
+                  Bio Fertilizers
+                </Link>
+              </li>
+              <li>
+                <Link to="/products?category=npk-special" className="text-green-300 hover:text-white transition-colors">
+                  NPK Special
+                </Link>
+              </li>
             </ul>
           </div>
-
           <div>
             <h3 className="font-semibold text-white mb-4">Contact</h3>
             <ul className="space-y-3 text-sm">
