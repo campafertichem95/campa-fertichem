@@ -545,20 +545,35 @@ function IntroSection() {
 // ─── CTA ──────────────────────────────────────────────────────────────────────
 function CTABanner() {
   return (
-    <section className="py-16 bg-green-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-        <h2 className="text-3xl font-bold mb-4">Looking for the Right Fertilizer Solution?</h2>
-        <p className="text-green-100 mb-8 max-w-xl mx-auto">
-          Browse our complete product catalogue or reach out to our team for personalized recommendations.
+    <section className="relative py-20 bg-gradient-to-br from-emerald-800 via-green-800 to-teal-950 text-white overflow-hidden">
+      {/* Background Soft Glows */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-300/15 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-emerald-200 text-xs font-semibold uppercase tracking-wider mb-4">
+          Need Guidance?
+        </span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+          Looking for the Right Fertilizer Solution?
+        </h2>
+        <p className="text-emerald-100/90 text-base sm:text-lg mb-8 max-w-2xl mx-auto font-normal">
+          Browse our complete product catalogue or reach out to our agronomy experts for customized crop nutrition.
         </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Button asChild size="lg" className="bg-white text-green-700 hover:bg-green-50">
+
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Button
+            asChild
+            size="lg"
+            className="bg-white text-emerald-950 hover:bg-emerald-50 font-bold px-7 rounded-xl shadow-lg transition-transform hover:-translate-y-0.5"
+          >
             <Link to="/products">Explore Products</Link>
           </Button>
           <Button
             asChild
             size="lg"
-            className="bg-transparent border border-white text-white hover:bg-white hover:text-green-700 transition-colors"
+            variant="outline"
+            className="border-white/70 bg-transparent text-white hover:bg-white/15 hover:text-white font-semibold px-7 rounded-xl transition-transform hover:-translate-y-0.5"
           >
             <Link to="/contact">Send an Enquiry</Link>
           </Button>
@@ -567,7 +582,6 @@ function CTABanner() {
     </section>
   )
 }
-
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([])
