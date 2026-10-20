@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }
 
-// ─── Clean Agricultural Crops Marquee (Right to Left) ──────────────────────────
+// ─── Exact Footer Matching Color Crops Ribbon ─────────────────────────────────
 function CropsCarousel() {
   const crops = [
     'Sugarcane',
@@ -23,44 +23,39 @@ function CropsCarousel() {
     'Paddy / Rice',
     'Wheat',
     'Maize',
+    'Chilli & Capsicum',
+    'Banana',
+    'Citrus Fruits',
+    'Pulses & Legumes',
     'Vegetables & Horticulture',
   ]
 
   const duplicatedCrops = [...crops, ...crops]
 
   return (
-    <div className="relative w-full bg-emerald-950 text-emerald-100 py-3 border-b border-emerald-900 overflow-hidden shadow-inner">
-      <div className="flex items-center">
-        {/* Left Fixed Badge */}
-        <div className="z-10 bg-emerald-900/90 px-5 py-1 border-r border-emerald-800 flex items-center gap-2 shadow-md flex-shrink-0">
-          <Sprout className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-200 whitespace-nowrap">
-            Tailored For
-          </span>
-        </div>
-
-        {/* Right to Left Scrolling Track */}
-        <div className="overflow-hidden whitespace-nowrap flex flex-1">
-          <motion.div
-            className="flex items-center gap-8 flex-nowrap"
-            animate={{ x: ['0%', '-50%'] }}
-            transition={{
-              repeat: Infinity,
-              repeatType: 'loop',
-              duration: 25,
-              ease: 'linear',
-            }}
-          >
-            {duplicatedCrops.map((crop, idx) => (
-              <div key={idx} className="flex items-center gap-4 flex-shrink-0">
-                <span className="text-sm font-medium tracking-wide text-white hover:text-emerald-300 transition-colors">
-                  {crop}
-                </span>
-                <span className="text-emerald-500 text-xs">•</span>
-              </div>
-            ))}
-          </motion.div>
-        </div>
+    <div className="w-full bg-[#051c13] py-3.5 overflow-hidden border-y border-emerald-900/60 shadow-sm select-none">
+      <div className="overflow-hidden whitespace-nowrap flex w-full">
+        <motion.div
+          className="flex items-center gap-10 flex-nowrap"
+          animate={{ x: ['0%', '-50%'] }}
+          transition={{
+            repeat: Infinity,
+            repeatType: 'loop',
+            duration: 32,
+            ease: 'linear',
+          }}
+        >
+          {duplicatedCrops.map((crop, idx) => (
+            <div key={idx} className="flex items-center gap-10 flex-shrink-0">
+              <span className="font-serif italic text-base sm:text-lg tracking-wide text-emerald-100/90 drop-shadow-xs">
+                {crop}
+              </span>
+              <span className="text-emerald-400 text-xs select-none">
+                ❖
+              </span>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </div>
   )
