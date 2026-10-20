@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useReducedMotion, useMotionValue, useTransform, useSpring } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { ArrowRight, ChevronLeft, ChevronRight, Leaf, Shield, Users, Award, Package, Sprout } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { Category, Product } from '@/types/database'
@@ -10,83 +10,91 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }
 
-// ─── 3D Tilt + Zoom Lens Card ─────────────────────────────────────────────────
+// ─── Clean Agricultural Crops Marquee (Right to Left) ──────────────────────────
+function CropsCarousel() {
+  const crops = [
+    'Sugarcane',
+    'Cotton',
+    'Soybean',
+    'Grapes',
+    'Pomegranate',
+    'Onion',
+    'Tomato',
+    'Paddy / Rice',
+    'Wheat',
+    'Maize',
+    'Vegetables & Horticulture',
+  ]
+
+  const duplicatedCrops = [...crops, ...crops]
+
+  return (
+    <div className="relative w-full bg-emerald-950 text-emerald-100 py-3 border-b border-emerald-900 overflow-hidden shadow-inner">
+      <div className="flex items-center">
+        {/* Left Fixed Badge */}
+        <div className="z-10 bg-emerald-900/90 px-5 py-1 border-r border-emerald-800 flex items-center gap-2 shadow-md flex-shrink-0">
+          <Sprout className="w-4 h-4 text-emerald-400" />
+          <span className="text-xs font-bold uppercase tracking-wider text-emerald-200 whitespace-nowrap">
+            Tailored For
+          </span>
+        </div>
+
+        {/* Right to Left Scrolling Track */}
+        <div className="overflow-hidden whitespace-nowrap flex flex-1">
+          <motion.div
+            className="flex items-center gap-8 flex-nowrap"
+            animate={{ x: ['0%', '-50%'] }}
+            transition={{
+              repeat: Infinity,
+              repeatType: 'loop',
+              duration: 25,
+              ease: 'linear',
+            }}
+          >
+            {duplicatedCrops.map((crop, idx) => (
+              <div key={idx} className="flex items-center gap-4 flex-shrink-0">
+                <span className="text-sm font-medium tracking-wide text-white hover:text-emerald-300 transition-colors">
+                  {crop}
+                </span>
+                <span className="text-emerald-500 text-xs">•</span>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Clean Category Card ──────────────────────────────────────────────────────
 function CategoryCard({
   cat,
   index,
   productCount,
-  visibleCount,
 }: {
   cat: Category
   index: number
   productCount: number
-  visibleCount: number
 }) {
-  const prefersReduced = useReducedMotion()
-  const cardRef = useRef<HTMLDivElement>(null)
-
-  const rawX = useMotionValue(0)
-  const rawY = useMotionValue(0)
-  const lensX = useMotionValue(50)
-  const lensY = useMotionValue(50)
-  const [hovered, setHovered] = useState(false)
-
-  // Smooth spring for tilt
-  const rotateX = useSpring(useTransform(rawY, [-0.5, 0.5], [10, -10]), { stiffness: 300, damping: 30 })
-  const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-10, 10]), { stiffness: 300, damping: 30 })
-  const scale   = useSpring(hovered ? 1.03 : 1, { stiffness: 300, damping: 25 })
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (prefersReduced || !cardRef.current) return
-    const rect = cardRef.current.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width  - 0.5
-    const y = (e.clientY - rect.top)  / rect.height - 0.5
-    rawX.set(x)
-    rawY.set(y)
-    lensX.set(((e.clientX - rect.left) / rect.width)  * 100)
-    lensY.set(((e.clientY - rect.top)  / rect.height) * 100)
-  }
-
-  const handleMouseLeave = () => {
-    rawX.set(0)
-    rawY.set(0)
-    lensX.set(50)
-    lensY.set(50)
-    setHovered(false)
-  }
-
   return (
     <motion.div
       key={cat.id}
-      className="flex-shrink-0"
-      style={{
-        width: `calc(${100 / visibleCount}% - ${((visibleCount - 1) * 20) / visibleCount}px)`,
-        perspective: 900
-      }}
+      className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/4 px-2"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
     >
-      <Link to={`/products?category=${cat.slug}`} className="block h-full" tabIndex={0}>
-        <motion.div
-          ref={cardRef}
-          onMouseMove={handleMouseMove}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={handleMouseLeave}
-          style={prefersReduced ? {} : { rotateX, rotateY, scale, transformStyle: 'preserve-3d' }}
-          className="relative rounded-2xl overflow-hidden bg-green-100 shadow-md hover:shadow-2xl transition-shadow duration-300 cursor-pointer h-full"
-        >
-          {/* ── Image with zoom-in on hover ── */}
+      <Link to={`/products?category=${cat.slug}`} className="block h-full group" tabIndex={0}>
+        <div className="relative rounded-2xl overflow-hidden bg-green-100 shadow-md hover:shadow-2xl transition-all duration-300 h-full">
+          {/* Image */}
           <div className="aspect-[3/4] overflow-hidden">
             {cat.image_path ? (
-              <motion.img
+              <img
                 src={cat.image_path}
                 alt={cat.name}
                 loading="lazy"
-                animate={prefersReduced ? {} : { scale: hovered ? 1.12 : 1 }}
-                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-green-200">
@@ -95,72 +103,33 @@ function CategoryCard({
             )}
           </div>
 
-          {/* ── Premium Gradient overlay — मजकूर स्पष्ट दिसण्यासाठी सुधारीत ── */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            animate={{ background: hovered
-              ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.1) 100%)'
-              : 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0) 100%)'
-            }}
-            transition={{ duration: 0.35 }}
-          />
+          {/* Premium Dark Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
 
-          {/* ── Product count badge ── */}
-          <motion.div
-            className="absolute top-3.5 right-3.5 flex items-center gap-1.5 bg-white/95 backdrop-blur-md text-gray-800 text-xs font-semibold px-3 py-1 rounded-full shadow-sm"
-            initial={{ scale: 0, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: 'spring', delay: index * 0.08 + 0.3 }}
-          >
+          {/* Product Count Badge */}
+          <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 bg-white/95 backdrop-blur-md text-gray-800 text-xs font-semibold px-3 py-1 rounded-full shadow-sm z-10">
             <Package className="h-3.5 w-3.5 text-green-700" />
             {productCount} Products
-          </motion.div>
-
-          {/* ── Bottom text ── */}
-          <div className="absolute bottom-0 left-0 right-0 p-5 text-white z-10">
-            <motion.h3
-              className="font-bold text-base uppercase tracking-wider leading-snug drop-shadow-md"
-              animate={{ y: hovered ? -3 : 0 }}
-              transition={{ duration: 0.25 }}
-            >
-              {cat.name}
-            </motion.h3>
-
-            {/* Description — fades in on hover */}
-            {cat.description && (
-              <motion.p
-                className="text-xs text-gray-200 mt-1 line-clamp-2"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: hovered ? 1 : 0, height: hovered ? 'auto' : 0 }}
-                transition={{ duration: 0.25 }}
-              >
-                {cat.description}
-              </motion.p>
-            )}
-
-            {/* Explore pill */}
-            <motion.span
-              className="inline-flex items-center gap-1 mt-2.5 text-xs font-semibold text-green-300"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 6 }}
-              transition={{ duration: 0.25 }}
-            >
-              Explore Category
-              <ArrowRight className="h-3 w-3" />
-            </motion.span>
           </div>
 
-          {/* ── 3D depth border glow ── */}
-          <motion.div
-            className="absolute inset-0 rounded-2xl pointer-events-none"
-            animate={{ boxShadow: hovered
-              ? '0 0 0 2px rgba(74,222,128,0.5), 0 20px 35px rgba(0,0,0,0.3)'
-              : '0 0 0 0px transparent, 0 4px 12px rgba(0,0,0,0.08)'
-            }}
-            transition={{ duration: 0.3 }}
-          />
-        </motion.div>
+          {/* Bottom Text Content */}
+          <div className="absolute bottom-0 left-0 right-0 p-5 text-white z-10">
+            <h3 className="font-bold text-base uppercase tracking-wider leading-snug drop-shadow-md group-hover:text-green-300 transition-colors">
+              {cat.name}
+            </h3>
+
+            {cat.description && (
+              <p className="text-xs text-gray-200 mt-1 line-clamp-2">
+                {cat.description}
+              </p>
+            )}
+
+            <span className="inline-flex items-center gap-1 mt-2.5 text-xs font-semibold text-green-300 group-hover:translate-x-1 transition-transform">
+              Explore Category
+              <ArrowRight className="h-3 w-3" />
+            </span>
+          </div>
+        </div>
       </Link>
     </motion.div>
   )
@@ -218,10 +187,14 @@ function CategorySection({
 
   useEffect(() => {
     startTimer()
-    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
   }, [startTimer])
 
-  const pause  = () => { if (timerRef.current) clearInterval(timerRef.current) }
+  const pause = () => {
+    if (timerRef.current) clearInterval(timerRef.current)
+  }
   const resume = () => startTimer()
 
   if (!categories.length) return null
@@ -229,8 +202,6 @@ function CategorySection({
   return (
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Header */}
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -248,13 +219,7 @@ function CategorySection({
           </p>
         </motion.div>
 
-        {/* Slider Container */}
-        <div
-          className="relative"
-          onMouseEnter={pause}
-          onMouseLeave={resume}
-        >
-          {/* Prev Button */}
+        <div className="relative" onMouseEnter={pause} onMouseLeave={resume}>
           <button
             onClick={() => go(-1)}
             disabled={!canPrev}
@@ -264,12 +229,11 @@ function CategorySection({
             <ChevronLeft className="h-5 w-5" />
           </button>
 
-          {/* Viewport */}
           <div className="overflow-hidden">
             <motion.div
-              className="flex gap-5"
+              className="flex"
               animate={{
-                x: prefersReduced ? 0 : `calc(-${current} * (${100 / VISIBLE}% + ${(20 - 20 / VISIBLE)}px))`
+                x: prefersReduced ? 0 : `-${current * (100 / VISIBLE)}%`
               }}
               transition={{ type: 'spring', stiffness: 220, damping: 26 }}
             >
@@ -279,13 +243,11 @@ function CategorySection({
                   cat={cat}
                   index={i}
                   productCount={productCounts[cat.id] ?? 0}
-                  visibleCount={VISIBLE}
                 />
               ))}
             </motion.div>
           </div>
 
-          {/* Next Button */}
           <button
             onClick={() => go(1)}
             disabled={!canNext}
@@ -296,7 +258,6 @@ function CategorySection({
           </button>
         </div>
 
-        {/* Dot indicators */}
         {total > VISIBLE && (
           <div className="flex justify-center gap-2 mt-8">
             {Array.from({ length: total - VISIBLE + 1 }).map((_, i) => (
@@ -307,7 +268,11 @@ function CategorySection({
               >
                 <motion.span
                   className="block rounded-full bg-green-600"
-                  animate={{ width: i === current ? 24 : 10, height: 10, opacity: i === current ? 1 : 0.35 }}
+                  animate={{
+                    width: i === current ? 24 : 10,
+                    height: 10,
+                    opacity: i === current ? 1 : 0.35,
+                  }}
                   transition={{ duration: 0.3 }}
                 />
               </button>
@@ -315,10 +280,11 @@ function CategorySection({
           </div>
         )}
 
-        {/* View all */}
         <div className="text-center mt-10">
           <Button asChild variant="outline" className="border-green-700 text-green-700 hover:bg-green-50">
-            <Link to="/products">View All Products <ArrowRight className="ml-1 h-4 w-4" /></Link>
+            <Link to="/products">
+              View All Products <ArrowRight className="ml-1 h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </div>
@@ -343,7 +309,9 @@ function FeaturedProducts({ products }: { products: Product[] }) {
     return () => window.removeEventListener('resize', update)
   }, [])
 
-  useEffect(() => { setIdx(0) }, [visible])
+  useEffect(() => {
+    setIdx(0)
+  }, [visible])
 
   const max = Math.max(0, products.length - visible)
 
@@ -358,12 +326,20 @@ function FeaturedProducts({ products }: { products: Product[] }) {
             <p className="text-gray-500 mt-1">Our highlighted fertilizer solutions</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setIdx(i => Math.max(0, i - 1))} disabled={idx === 0}
-              className="p-2 rounded-full border hover:bg-gray-50 disabled:opacity-40" aria-label="Previous">
+            <button
+              onClick={() => setIdx(i => Math.max(0, i - 1))}
+              disabled={idx === 0}
+              className="p-2 rounded-full border hover:bg-gray-50 disabled:opacity-40"
+              aria-label="Previous"
+            >
               <ChevronLeft className="h-5 w-5" />
             </button>
-            <button onClick={() => setIdx(i => Math.min(max, i + 1))} disabled={idx >= max}
-              className="p-2 rounded-full border hover:bg-gray-50 disabled:opacity-40" aria-label="Next">
+            <button
+              onClick={() => setIdx(i => Math.min(max, i + 1))}
+              disabled={idx >= max}
+              className="p-2 rounded-full border hover:bg-gray-50 disabled:opacity-40"
+              aria-label="Next"
+            >
               <ChevronRight className="h-5 w-5" />
             </button>
           </div>
@@ -379,7 +355,12 @@ function FeaturedProducts({ products }: { products: Product[] }) {
                 <Card className="h-full hover:shadow-lg transition-shadow">
                   <div className="aspect-[4/3] bg-gray-100 rounded-t-lg overflow-hidden">
                     {product.image_path ? (
-                      <img src={product.image_path} alt={product.name} className="w-full h-full object-cover" loading="lazy" />
+                      <img
+                        src={product.image_path}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Leaf className="h-12 w-12 text-gray-300" />
@@ -388,11 +369,15 @@ function FeaturedProducts({ products }: { products: Product[] }) {
                   </div>
                   <CardContent className="p-4">
                     {product.categories && (
-                      <span className="text-xs text-green-700 font-medium">{product.categories.name}</span>
+                      <span className="text-xs text-green-700 font-medium">
+                        {product.categories.name}
+                      </span>
                     )}
                     <h3 className="font-semibold text-gray-900 mt-1">{product.name}</h3>
                     {product.short_description && (
-                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.short_description}</p>
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                        {product.short_description}
+                      </p>
                     )}
                     <Button asChild size="sm" className="mt-3 w-full bg-green-700 hover:bg-green-800">
                       <Link to={`/products/${product.slug}`}>View Details</Link>
@@ -411,10 +396,26 @@ function FeaturedProducts({ products }: { products: Product[] }) {
 // ─── Why Choose Us ────────────────────────────────────────────────────────────
 function WhyChooseUs() {
   const features = [
-    { icon: Leaf,   title: 'Wide Product Range',   desc: 'Comprehensive fertilizer solutions covering nitrogen, phosphorus, potassium, and micronutrients.' },
-    { icon: Shield, title: 'Quality Commitment',   desc: 'Products formulated to meet crop nutritional requirements with consistent quality standards.' },
-    { icon: Users,  title: 'Customer Support',     desc: 'Dedicated support to help you choose the right fertilizer solution for your crops.' },
-    { icon: Award,  title: 'Crop Nutrition Focus', desc: 'Specialized knowledge in crop nutrition to help maximize agricultural productivity.' },
+    {
+      icon: Leaf,
+      title: 'Wide Product Range',
+      desc: 'Comprehensive fertilizer solutions covering nitrogen, phosphorus, potassium, and micronutrients.',
+    },
+    {
+      icon: Shield,
+      title: 'Quality Commitment',
+      desc: 'Products formulated to meet crop nutritional requirements with consistent quality standards.',
+    },
+    {
+      icon: Users,
+      title: 'Customer Support',
+      desc: 'Dedicated support to help you choose the right fertilizer solution for your crops.',
+    },
+    {
+      icon: Award,
+      title: 'Crop Nutrition Focus',
+      desc: 'Specialized knowledge in crop nutrition to help maximize agricultural productivity.',
+    },
   ]
 
   return (
@@ -451,20 +452,37 @@ function WhyChooseUs() {
 function HeroSection() {
   const prefersReduced = useReducedMotion()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const heroVideo  = (import.meta as any).env?.VITE_HERO_VIDEO_URL  || ''
-  const heroPoster = (import.meta as any).env?.VITE_HERO_POSTER_URL || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80'
+  const heroVideo = (import.meta as any).env?.VITE_HERO_VIDEO_URL || ''
+  const heroPoster =
+    (import.meta as any).env?.VITE_HERO_POSTER_URL ||
+    'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80'
 
   return (
     <section className="relative h-[90vh] min-h-[500px] flex items-center overflow-hidden">
       {heroVideo && !prefersReduced ? (
-        <video ref={videoRef} className="absolute inset-0 w-full h-full object-cover"
-          src={heroVideo} poster={heroPoster} autoPlay muted loop playsInline aria-hidden="true" />
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover"
+          src={heroVideo}
+          poster={heroPoster}
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-hidden="true"
+        />
       ) : (
         <img src={heroPoster} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
       )}
       <div className="absolute inset-0 bg-green-950/70" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-        <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ duration: 0.7 }} className="max-w-2xl">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.7 }}
+          className="max-w-2xl"
+        >
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-4">
             Nourishing Growth Fertilizer.<br />Enabling Tomorrow.
           </h1>
@@ -473,9 +491,15 @@ function HeroSection() {
           </p>
           <div className="flex flex-wrap gap-4">
             <Button asChild size="lg" className="bg-green-500 hover:bg-green-400 text-green-950 font-semibold">
-              <Link to="/products">Explore Our Products <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              <Link to="/products">
+                Explore Our Products <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
             </Button>
-            <Button asChild size="lg" className="bg-transparent border border-white text-white hover:bg-white hover:text-green-900 transition-colors">
+            <Button
+              asChild
+              size="lg"
+              className="bg-transparent border border-white text-white hover:bg-white hover:text-green-900 transition-colors"
+            >
               <Link to="/contact">Contact Us</Link>
             </Button>
           </div>
@@ -490,10 +514,20 @@ function IntroSection() {
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-          transition={{ duration: 0.6 }} className="max-w-3xl mx-auto text-center">
-          <span className="inline-block text-green-700 font-semibold text-sm uppercase tracking-wider mb-3">About Campa Fertichem</span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Committed to Crop Nutrition Excellence</h2>
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-3xl mx-auto text-center"
+        >
+          <span className="inline-block text-green-700 font-semibold text-sm uppercase tracking-wider mb-3">
+            About Campa Fertichem
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+            Committed to Crop Nutrition Excellence
+          </h2>
           <p className="text-gray-600 text-lg leading-relaxed">
             Campa Fertichem is a fertilizer manufacturer and supplier based in Taloja, Navi Mumbai, Maharashtra, India.
             We provide a comprehensive range of fertilizer solutions designed to support healthy crop growth and improve agricultural productivity.
@@ -521,7 +555,11 @@ function CTABanner() {
           <Button asChild size="lg" className="bg-white text-green-700 hover:bg-green-50">
             <Link to="/products">Explore Products</Link>
           </Button>
-          <Button asChild size="lg" className="bg-transparent border border-white text-white hover:bg-white hover:text-green-700 transition-colors">
+          <Button
+            asChild
+            size="lg"
+            className="bg-transparent border border-white text-white hover:bg-white hover:text-green-700 transition-colors"
+          >
             <Link to="/contact">Send an Enquiry</Link>
           </Button>
         </div>
@@ -530,18 +568,23 @@ function CTABanner() {
   )
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const [categories, setCategories]     = useState<Category[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [productCounts, setProductCounts] = useState<Record<string, number>>({})
-  const [featured, setFeatured]         = useState<Product[]>([])
-  const [loading, setLoading]           = useState(true)
+  const [featured, setFeatured] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       supabase.from('categories').select('*').eq('is_active', true).order('sort_order'),
-      supabase.from('products').select('*, categories(id, name, slug)')
-        .eq('is_featured', true).eq('is_published', true).order('sort_order').limit(9),
+      supabase
+        .from('products')
+        .select('*, categories(id, name, slug)')
+        .eq('is_featured', true)
+        .eq('is_published', true)
+        .order('sort_order')
+        .limit(9),
     ]).then(async ([catRes, prodRes]) => {
       const cats: Category[] = catRes.data ?? []
       setCategories(cats)
@@ -549,7 +592,7 @@ export default function HomePage() {
 
       const counts: Record<string, number> = {}
       await Promise.all(
-        cats.map(async (cat) => {
+        cats.map(async cat => {
           const { count } = await supabase
             .from('products')
             .select('id', { count: 'exact', head: true })
@@ -566,7 +609,12 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
+
+      {/* Hero Section च्या खाली लगेच सुरू होणारा Crops Marquee */}
+      <CropsCarousel />
+
       <IntroSection />
+
       {loading ? (
         <div className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4">
