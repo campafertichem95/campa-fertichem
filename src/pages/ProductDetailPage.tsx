@@ -31,6 +31,67 @@ export default function ProductDetailPage() {
       })
   }, [slug])
 
+  // Description मधील GROWMAX, Benefits, Dose, Usage बोल्ड आणि नीट अलाइन करणारे फंक्शन
+  const renderFormattedDescription = (text?: string) => {
+    if (!text) return null
+
+    const headingKeywords = ['GROWMAX', 'BENEFITS', 'DOSE', 'USAGE', 'FEATURES', 'APPLICATION', 'TARGET CROPS']
+    const lines = text.split('\n').map((l) => l.trim()).filter(Boolean)
+
+    return (
+      <div className="space-y-2 mb-6">
+        {lines.map((line, idx) => {
+          // ** ने बोल्ड केलेले शब्द काढून साधे तपासणे
+          const rawLine = line.replace(/\*\*/g, '').trim()
+          const cleanUpper = rawLine.replace(/[:]/g, '').toUpperCase()
+          
+          const isBullet = rawLine.startsWith('•') || rawLine.startsWith('-')
+          const isHeading =
+            headingKeywords.includes(cleanUpper) ||
+            rawLine.endsWith(':') ||
+            (idx === 0 && !isBullet)
+
+          // 1. बुलेट पॉईंट्स (•)
+          if (isBullet) {
+            const bulletText = rawLine.replace(/^[•\-]\s*/, '')
+            return (
+              <div key={idx} className="flex items-start gap-2.5 ml-1 text-sm text-gray-700 leading-relaxed font-normal">
+                <span className="text-emerald-700 font-bold text-base leading-none mt-1 flex-shrink-0">•</span>
+                <span>{bulletText}</span>
+              </div>
+            )
+          }
+
+          // 2. मुख्य मथळे (Headings - GROWMAX, Benefits, Dose, Usage)
+          if (isHeading) {
+            const headingText = rawLine.replace(/:$/, '')
+            const isMainTitle = idx === 0
+            return (
+              <div key={idx} className={isMainTitle ? 'pt-1 pb-1' : 'pt-4 pb-1'}>
+                <h4
+                  className={`font-bold tracking-tight ${
+                    isMainTitle
+                      ? 'text-lg sm:text-xl text-emerald-950 uppercase'
+                      : 'text-sm sm:text-base text-gray-900'
+                  }`}
+                >
+                  {headingText}
+                </h4>
+              </div>
+            )
+          }
+
+          // 3. सामान्य परिच्छेद
+          return (
+            <p key={idx} className="text-sm text-gray-700 leading-relaxed font-normal">
+              {rawLine}
+            </p>
+          )
+        })}
+      </div>
+    )
+  }
+
   // Usage info मधील मथळे बोल्ड करून तंतोतंत text-sm आणि सरळ अलाइनमेंट देणारे फंक्शन
   const renderUsageInformation = (text: string) => {
     if (!text) return null
@@ -45,6 +106,7 @@ export default function ProductDetailPage() {
       'Application Method',
       'Directions for Use',
       'Usage Recommendations',
+      'Usage',
     ]
 
     const pattern = new RegExp(`(${labels.join('|')}):`, 'g')
@@ -64,11 +126,9 @@ export default function ProductDetailPage() {
               key={idx}
               className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6 py-2.5 border-b border-emerald-100/60 last:border-b-0"
             >
-              {/* डावीकडील मथळा - फिक्स रुंदी (w-44) आणि बोल्ड */}
               <span className="sm:w-44 shrink-0 font-bold text-gray-900 text-sm tracking-tight">
                 {title}
               </span>
-              {/* उजवीकडील माहिती - तंतोतंत text-sm आणि शांत रंग */}
               <span className="flex-1 text-gray-700 text-sm leading-relaxed font-normal">
                 {desc}
               </span>
@@ -162,14 +222,17 @@ export default function ProductDetailPage() {
               {product.name}
             </h1>
 
-            {/* वरचा मुख्य परिच्छेद - तंतोतंत text-sm (14px) आणि खालील मजकुरासारखाच रंग व लीडिंग */}
-            {(product.short_description || product.description) && (
-              <p className="text-sm text-gray-700 leading-relaxed font-normal mb-5">
-                {product.short_description || product.description}
+            {/* Short Description (जर असेल तर) */}
+            {product.short_description && (
+              <p className="text-sm text-gray-600 leading-relaxed font-normal mb-4">
+                {product.short_description}
               </p>
             )}
 
-            {/* Specifications / Composition Table (जर उपलब्ध असेल तर) */}
+            {/* मुख्य Description: GROWMAX, Benefits, Dose इत्यादी सर्व मथळे आपोआप बोल्ड आणि अलाइन होतील */}
+            {product.description && renderFormattedDescription(product.description)}
+
+            {/* Specifications / Composition Table */}
             {specs && Object.keys(specs).length > 0 && (
               <div className="mb-6">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-gray-900 mb-3">
@@ -190,7 +253,7 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Usage Information - एकसारखी फॉन्ट साईझ, बोल्ड टायटल्स आणि परफेक्ट अलाइनमेंट */}
+            {/* Usage Information */}
             {product.usage_information && (
               <div className="mb-8">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-3 flex items-center gap-2">
