@@ -19,9 +19,68 @@ export default function Footer() {
               </span>
               <span className="font-bold text-white text-lg tracking-wide">Campa Fertichem</span>
             </div>
-            <p className="text-sm text-emerald-100/70 leading-relaxed">
+            <p className="text-sm text-emerald-100/70 leading-relaxed mb-4">
               Quality fertilizer solutions for better crop nutrition. Serving farmers across India from Taloja, Navi Mumbai.
             </p>
+
+          {/* Social Media Links */}
+            <div className="flex items-center gap-3">
+              {/* Instagram Original Gradient Icon */}
+              <a
+                href="https://www.instagram.com/campafertichem?stkn=ajB0N3B4ZTlsczNn"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="w-10 h-10 rounded-xl bg-emerald-950/80 border border-emerald-700/60 flex items-center justify-center hover:scale-110 transition-all shadow-sm"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 24 24">
+                  <radialGradient id="ig-grad" cx="20%" cy="110%" r="140%">
+                    <stop offset="0%" stopColor="#fdf497" />
+                    <stop offset="5%" stopColor="#fdf497" />
+                    <stop offset="45%" stopColor="#fd5949" />
+                    <stop offset="60%" stopColor="#d6249f" />
+                    <stop offset="90%" stopColor="#285AEB" />
+                  </radialGradient>
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="url(#ig-grad)" />
+                  <path
+                    d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zm1.5-4.87h.01"
+                    fill="none"
+                    stroke="#ffffff"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <rect
+                    x="2"
+                    y="2"
+                    width="20"
+                    height="20"
+                    rx="5"
+                    ry="5"
+                    fill="none"
+                    stroke="#ffffff"
+                    strokeWidth="1.8"
+                  />
+                </svg>
+              </a>
+
+              {/* Facebook Original Blue Icon */}
+              <a
+                href="https://www.facebook.com/profile.php?id=61594347011206"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="w-10 h-10 rounded-xl bg-emerald-950/80 border border-emerald-700/60 flex items-center justify-center hover:scale-110 transition-all shadow-sm"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="11" fill="#1877F2" />
+                  <path
+                    d="M15.12 12.75l.48-3.13h-3v-2.03c0-.85.42-1.68 1.76-1.68h1.36V3.25c-.8-.11-1.61-.17-2.42-.16-2.46 0-4.07 1.49-4.07 4.19v2.34H6.5v3.13h2.73V21a11.1 11.1 0 0 0 3.38 0v-8.25h2.51z"
+                    fill="#ffffff"
+                  />
+                </svg>
+              </a>
+            </div>
           </div>
 
           {/* Quick Links */}
@@ -120,7 +179,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Floating WhatsApp Button (केंद्रीत आणि थोडा वर) */}
+      {/* Floating WhatsApp Button */}
       <a
         href="https://wa.me/917276772958?text=Hello%20Campa%20Fertichem"
         target="_blank"
