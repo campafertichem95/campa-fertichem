@@ -89,6 +89,7 @@ function CategoryCard({
                 src={cat.image_path}
                 alt={cat.name}
                 loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
             ) : (
@@ -355,6 +356,7 @@ function FeaturedProducts({ products }: { products: Product[] }) {
                         alt={product.name}
                         className="w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
@@ -467,7 +469,7 @@ function HeroSection() {
           aria-hidden="true"
         />
       ) : (
-        <img src={heroPoster} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+        <img src={heroPoster} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" fetchPriority="high" />
       )}
       <div className="absolute inset-0 bg-green-950/70" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
@@ -594,22 +596,16 @@ export default function HomePage() {
         .eq('is_published', true)
         .order('sort_order')
         .limit(9),
-    ]).then(async ([catRes, prodRes]) => {
+      supabase.from('products').select('category_id').eq('is_published', true),
+    ]).then(([catRes, prodRes, countRes]) => {
       const cats: Category[] = catRes.data ?? []
       setCategories(cats)
       if (prodRes.data) setFeatured(prodRes.data as Product[])
 
       const counts: Record<string, number> = {}
-      await Promise.all(
-        cats.map(async cat => {
-          const { count } = await supabase
-            .from('products')
-            .select('id', { count: 'exact', head: true })
-            .eq('category_id', cat.id)
-            .eq('is_published', true)
-          counts[cat.id] = count ?? 0
-        })
-      )
+      countRes.data?.forEach(p => {
+        counts[p.category_id] = (counts[p.category_id] ?? 0) + 1
+      })
       setProductCounts(counts)
       setLoading(false)
     })
@@ -619,7 +615,7 @@ export default function HomePage() {
     <>
       <HeroSection />
 
-      {/* Hero Section च्या खाली लगेच सुरू होणारा Crops Marquee */}
+      {/* Hero Section Crops Marquee */}
       <CropsCarousel />
 
       <IntroSection />

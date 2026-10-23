@@ -1,33 +1,35 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from '@/hooks/useAuth'
 import PublicLayout from '@/components/layout/PublicLayout'
 import ProtectedRoute from '@/components/layout/ProtectedRoute'
 import AdminLayout from '@/components/layout/AdminLayout'
 
-import HomePage from '@/pages/HomePage'
-import AboutPage from '@/pages/AboutPage'
-import ProductsPage from '@/pages/ProductsPage'
-import ProductDetailPage from '@/pages/ProductDetailPage'
-import BlogPage from '@/pages/BlogPage'
-import BlogPostPage from '@/pages/BlogPostPage'
-import ContactPage from '@/pages/ContactPage'
-import NotFoundPage from '@/pages/NotFoundPage'
+const HomePage = lazy(() => import('@/pages/HomePage'))
+const AboutPage = lazy(() => import('@/pages/AboutPage'))
+const ProductsPage = lazy(() => import('@/pages/ProductsPage'))
+const ProductDetailPage = lazy(() => import('@/pages/ProductDetailPage'))
+const BlogPage = lazy(() => import('@/pages/BlogPage'))
+const BlogPostPage = lazy(() => import('@/pages/BlogPostPage'))
+const ContactPage = lazy(() => import('@/pages/ContactPage'))
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
-import AdminLoginPage from '@/pages/admin/AdminLoginPage'
-import AdminDashboard from '@/pages/admin/AdminDashboard'
-import AdminProductsPage from '@/pages/admin/AdminProductsPage'
-import AdminProductFormPage from '@/pages/admin/AdminProductFormPage'
-import AdminCategoriesPage from '@/pages/admin/AdminCategoriesPage'
-import AdminCategoryFormPage from '@/pages/admin/AdminCategoryFormPage'
-import AdminBlogPage from '@/pages/admin/AdminBlogPage'
-import AdminBlogFormPage from '@/pages/admin/AdminBlogFormPage'
-import AdminEnquiriesPage from '@/pages/admin/AdminEnquiriesPage'
-import AdminSettingsPage from '@/pages/admin/AdminSettingsPage'
+const AdminLoginPage = lazy(() => import('@/pages/admin/AdminLoginPage'))
+const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
+const AdminProductsPage = lazy(() => import('@/pages/admin/AdminProductsPage'))
+const AdminProductFormPage = lazy(() => import('@/pages/admin/AdminProductFormPage'))
+const AdminCategoriesPage = lazy(() => import('@/pages/admin/AdminCategoriesPage'))
+const AdminCategoryFormPage = lazy(() => import('@/pages/admin/AdminCategoryFormPage'))
+const AdminBlogPage = lazy(() => import('@/pages/admin/AdminBlogPage'))
+const AdminBlogFormPage = lazy(() => import('@/pages/admin/AdminBlogFormPage'))
+const AdminEnquiriesPage = lazy(() => import('@/pages/admin/AdminEnquiriesPage'))
+const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage'))
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <Suspense fallback={null}>
         <Routes>
           {/* Public routes */}
           <Route element={<PublicLayout />}>
@@ -60,6 +62,7 @@ export default function App() {
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        </Suspense>
       </BrowserRouter>
     </AuthProvider>
   )

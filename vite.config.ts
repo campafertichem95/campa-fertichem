@@ -11,4 +11,15 @@ export default defineConfig({
   resolve: {
     alias: { '@': resolve(__dirname, './src') },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          motion: ['motion/react'],
+          supabase: ['@supabase/supabase-js'],
+        },
+      },
+    },
+  },
 })
