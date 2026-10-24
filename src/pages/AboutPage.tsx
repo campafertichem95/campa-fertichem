@@ -157,7 +157,11 @@ export default function AboutPage() {
             <Button asChild size="lg" className="bg-lime-400 text-emerald-950 hover:bg-lime-300 font-bold px-8 py-6 rounded-xl shadow-xl transition-transform hover:scale-105">
               <Link to="/products">View Products</Link>
             </Button>
+<<<<<<< HEAD
             <Button asChild size="lg" variant="outline" className="border-white/40 bg-transparent text-white hover:bg-white/10 font-semibold px-8 py-6 rounded-xl transition-transform">
+=======
+            <Button asChild size="lg" className="bg-transparent border border-white text-white hover:bg-white/10">
+>>>>>>> b7484c9c034e0759437151c3d2109016b8f8eb78
               <Link to="/contact">Contact Us</Link>
             </Button>
           </div>
