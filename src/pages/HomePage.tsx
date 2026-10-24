@@ -88,15 +88,15 @@ function HeroSection() {
             animate="visible"
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-4">
               Nourishing Growth. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-lime-200 to-green-400">
                 Maximizing Harvests.
               </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-emerald-100/90 max-w-2xl mb-8 font-normal leading-relaxed">
-              Scientifically balanced liquid formulations, NPK specials, and bio-nutrients manufactured for superior soil vitality and commercial crop yields across India.
+            <p className="text-base sm:text-lg text-emerald-100/90 max-w-xl mb-6 font-normal leading-relaxed">
+              Scientifically balanced liquid fertilizers and bio-nutrients for superior soil vitality and crop yields.
             </p>
 
             <div className="flex flex-wrap items-center gap-4">
@@ -113,7 +113,7 @@ function HeroSection() {
             </div>
 
             {/* Quick Metrics */}
-            <div className="grid grid-cols-3 gap-6 mt-14 pt-8 border-t border-emerald-800/60 max-w-xl">
+            <div className="grid grid-cols-3 gap-6 mt-12 pt-6 border-t border-emerald-800/60 max-w-xl">
               <div>
                 <p className="text-2xl sm:text-3xl font-extrabold text-lime-300">100%</p>
                 <p className="text-xs sm:text-sm text-emerald-200/80 mt-0.5">Water Soluble</p>
@@ -124,7 +124,7 @@ function HeroSection() {
               </div>
               <div>
                 <p className="text-2xl sm:text-3xl font-extrabold text-lime-300">15+</p>
-                <p className="text-xs sm:text-sm text-emerald-200/80 mt-0.5">Major Crops Supported</p>
+                <p className="text-xs sm:text-sm text-emerald-200/80 mt-0.5">Major Crops</p>
               </div>
             </div>
           </motion.div>
@@ -374,79 +374,155 @@ function CategorySection({ categories, productCounts }: { categories: Category[]
   )
 }
 
-// ─── 5. Featured Products Grid ────────────────────────────────────────────────
+// ─── 5. Featured Products Slider (Carousel) ───────────────────────────────────
+function FeaturedCard({ product, index }: { product: Product; index: number }) {
+  return (
+    <motion.div
+      key={product.id}
+      className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 px-3"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
+    >
+      <Card className="h-full rounded-3xl overflow-hidden border border-emerald-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col bg-white">
+        <div className="aspect-[4/3] bg-emerald-50 relative overflow-hidden">
+          {product.image_path ? (
+            <img
+              src={product.image_path}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Leaf className="h-12 w-12 text-emerald-300" />
+            </div>
+          )}
+        </div>
+
+        <CardContent className="p-6 flex flex-col flex-grow">
+          {product.categories && (
+            <span className="text-xs text-green-700 font-medium mb-1">
+              {product.categories.name}
+            </span>
+          )}
+          <h3 className="font-bold text-xl text-gray-900 group-hover:text-emerald-700 transition-colors">
+            {product.name}
+          </h3>
+          {product.short_description && (
+            <p className="text-sm text-gray-500 mt-2 line-clamp-2 flex-grow">
+              {product.short_description}
+            </p>
+          )}
+          <div className="mt-6 pt-4 border-t border-gray-100">
+            <Button asChild className="w-full bg-emerald-900 hover:bg-emerald-950 text-white rounded-xl font-semibold">
+              <Link to={`/products/${product.slug}`}>
+                View Product Details <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+}
+
 function FeaturedProducts({ products }: { products: Product[] }) {
+  const prefersReduced = useReducedMotion()
+  const [current, setCurrent] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [visibleCount, setVisibleCount] = useState(3)
+
+  useEffect(() => {
+    const update = () => {
+      if (window.innerWidth < 640) setVisibleCount(1)
+      else if (window.innerWidth < 1024) setVisibleCount(2)
+      else setVisibleCount(3)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  const VISIBLE = visibleCount
+  const total = products.length
+  const canPrev = current > 0
+  const canNext = current < total - VISIBLE
+
+  useEffect(() => { setCurrent(0) }, [visibleCount])
+
+  const go = useCallback((dir: 1 | -1) => {
+    setCurrent(c => Math.min(Math.max(c + dir, 0), Math.max(total - VISIBLE, 0)))
+  }, [total, VISIBLE])
+
+  const startTimer = useCallback(() => {
+    if (prefersReduced || total <= VISIBLE) return
+    timerRef.current = setInterval(() => {
+      setCurrent(c => {
+        const next = c + 1
+        return next > total - VISIBLE ? 0 : next
+      })
+    }, 5000)
+  }, [prefersReduced, total, VISIBLE])
+
+  useEffect(() => {
+    startTimer()
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [startTimer])
+
   if (!products.length) return null
 
   return (
-    <section className="py-24 bg-emerald-950/5 relative">
+    <section className="py-24 bg-emerald-950/5 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="inline-block text-emerald-700 font-semibold text-sm uppercase tracking-wider mb-2 bg-emerald-100 px-3 py-1 rounded-full">
-            Featured Solutions
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            Trusted by Farmers Across India
-          </h2>
-          <p className="text-gray-500 mt-2">
-            Discover our highest-rated agricultural nutrition products for superior crop performance.
-          </p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
+          <div className="max-w-2xl">
+            <span className="inline-block text-emerald-700 font-semibold text-sm uppercase tracking-wider mb-2 bg-emerald-100 px-3 py-1 rounded-full">
+              FEATURED PRODUCTS
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+              Trusted by Farmers Across India
+            </h2>
+            <p className="text-gray-500 mt-2">
+              Discover our highest-rated agricultural nutrition products for superior crop performance.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 mt-6 md:mt-0">
+            <button
+              onClick={() => go(-1)}
+              disabled={!canPrev}
+              aria-label="Previous products"
+              className="w-12 h-12 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-900 transition-all disabled:opacity-30 disabled:pointer-events-none"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => go(1)}
+              disabled={!canNext}
+              aria-label="Next products"
+              className="w-12 h-12 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-900 transition-all disabled:opacity-30 disabled:pointer-events-none"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product, i) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-            >
-              <Card className="h-full rounded-3xl overflow-hidden border border-emerald-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col bg-white">
-                <div className="aspect-[4/3] bg-emerald-50 relative overflow-hidden">
-                  {product.image_path ? (
-                    <img
-                      src={product.image_path}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Leaf className="h-12 w-12 text-emerald-300" />
-                    </div>
-                  )}
-                  {product.categories && (
-                    <span className="absolute top-4 left-4 bg-emerald-900/90 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
-                      {product.categories.name}
-                    </span>
-                  )}
-                </div>
-
-                <CardContent className="p-6 flex flex-col flex-grow">
-                  <h3 className="font-bold text-xl text-gray-900 group-hover:text-emerald-700 transition-colors">
-                    {product.name}
-                  </h3>
-                  {product.short_description && (
-                    <p className="text-sm text-gray-500 mt-2 line-clamp-2 flex-grow">
-                      {product.short_description}
-                    </p>
-                  )}
-                  <div className="mt-6 pt-4 border-t border-gray-100">
-                    <Button asChild className="w-full bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl font-semibold">
-                      <Link to={`/products/${product.slug}`}>
-                        View Product Details <ArrowRight className="ml-1.5 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+        <div className="relative overflow-hidden -mx-3 px-3 py-2">
+          <motion.div
+            className="flex"
+            animate={{ x: prefersReduced ? 0 : `-${current * (100 / VISIBLE)}%` }}
+            transition={{ type: 'spring', stiffness: 240, damping: 28 }}
+          >
+            {products.map((product, i) => (
+              <FeaturedCard key={product.id} product={product} index={i} />
+            ))}
+          </motion.div>
         </div>
 
         <div className="text-center mt-12">
-          <Button asChild size="lg" className="bg-emerald-800 hover:bg-emerald-900 text-white font-semibold px-8 rounded-xl">
+          <Button asChild size="lg" className="bg-emerald-900 hover:bg-emerald-950 text-white font-semibold px-8 rounded-xl shadow-md">
             <Link to="/products">Browse All Products</Link>
           </Button>
         </div>
