@@ -43,10 +43,11 @@ function ProductCard({ product }: { product: Product }) {
             <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.short_description}</p>
           )}
           <div className="flex gap-2 mt-3">
-            <Button asChild size="sm" className="flex-1 bg-green-700 hover:bg-green-800 text-xs">
+            {/* Home page सारखाच exact Deep Emerald Green कलर */}
+            <Button asChild size="sm" className="flex-1 bg-emerald-900 hover:bg-emerald-950 text-white text-xs rounded-xl font-semibold shadow-md">
               <Link to={`/products/${product.slug}`}>View Details</Link>
             </Button>
-            <Button asChild size="sm" variant="outline" className="flex-1 border-green-700 text-green-700 hover:bg-green-50 text-xs">
+            <Button asChild size="sm" variant="outline" className="flex-1 border-emerald-900 text-emerald-900 hover:bg-emerald-50 text-xs rounded-xl font-semibold">
               <Link to={`/contact?product=${product.id}`}>Enquire</Link>
             </Button>
           </div>
@@ -123,10 +124,10 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Page header */}
-      <div className="bg-green-950 text-white py-12">
+      <div className="bg-emerald-950 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl sm:text-4xl font-bold">Our Products</h1>
-          <p className="text-green-200 mt-2">Browse our complete range of fertilizer solutions</p>
+          <p className="text-emerald-200 mt-2">Browse our complete range of fertilizer solutions</p>
         </div>
       </div>
 
@@ -151,7 +152,7 @@ export default function ProductsPage() {
             onClick={() => selectCategory('')}
             className={cn(
               'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors',
-              !selectedSlug ? 'bg-green-700 text-white' : 'bg-white border text-gray-700 hover:bg-green-50'
+              !selectedSlug ? 'bg-emerald-900 text-white' : 'bg-white border text-gray-700 hover:bg-emerald-50'
             )}
           >
             All Products
@@ -162,7 +163,7 @@ export default function ProductsPage() {
               onClick={() => selectCategory(cat.slug)}
               className={cn(
                 'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors',
-                selectedSlug === cat.slug ? 'bg-green-700 text-white' : 'bg-white border text-gray-700 hover:bg-green-50'
+                selectedSlug === cat.slug ? 'bg-emerald-900 text-white' : 'bg-white border text-gray-700 hover:bg-emerald-50'
               )}
             >
               {cat.name}
