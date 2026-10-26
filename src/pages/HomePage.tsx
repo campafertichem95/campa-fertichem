@@ -50,15 +50,24 @@ function CropsCarousel() {
 function HeroSection() {
   const prefersReduced = useReducedMotion()
   const videoRef = useRef<HTMLVideoElement>(null)
-  
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768)
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+
   const heroVideo = (import.meta as any).env?.VITE_HERO_VIDEO_URL || 
     'https://assets.mixkit.co/videos/preview/mixkit-farmer-walking-through-a-wheat-field-41584-large.mp4'
   const heroPoster = (import.meta as any).env?.VITE_HERO_POSTER_URL || 
     'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1920&q=85'
 
+  const showVideo = heroVideo && !prefersReduced && !isMobile
+
   return (
     <section className="relative min-h-[92vh] flex items-center overflow-hidden bg-emerald-950">
-      {heroVideo && !prefersReduced ? (
+      {showVideo ? (
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover scale-105"
@@ -71,7 +80,13 @@ function HeroSection() {
           aria-hidden="true"
         />
       ) : (
-        <img src={heroPoster} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+        <img
+          src={heroPoster}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+          fetchPriority="high"
+        />
       )}
 
       {/* Multi-layer Sophisticated Gradient Overlay */}
