@@ -62,7 +62,7 @@ function HeroSection() {
       {showVideo ? (
         <video
           ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover scale-105"
+          className="absolute inset-0 w-full h-full object-cover object-center"
           src={heroVideo}
           poster={heroPoster}
           autoPlay
@@ -72,7 +72,7 @@ function HeroSection() {
           aria-hidden="true"
         />
       ) : (
-        <img src={heroPoster} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" fetchPriority="high" />
+        <img src={heroPoster} alt="" className="absolute inset-0 w-full h-full object-cover object-center" aria-hidden="true" fetchPriority="high" />
       )}
 
       {/* Multi-layer Sophisticated Gradient Overlay */}
