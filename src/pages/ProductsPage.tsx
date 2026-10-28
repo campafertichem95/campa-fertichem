@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { Search, Leaf, SlidersHorizontal } from 'lucide-react'
+import { Search, Leaf, SlidersHorizontal, Pointer } from 'lucide-react'
 import { motion } from 'motion/react'
 import { supabase } from '@/lib/supabase'
 import type { Category, Product } from '@/types/database'
@@ -151,9 +151,10 @@ export default function ProductsPage() {
           <button
             onClick={() => selectCategory('')}
             className={cn(
-              'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors',
+              'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors category-product-btn',
               !selectedSlug ? 'bg-emerald-900 text-white' : 'bg-white border text-gray-700 hover:bg-emerald-50'
             )}
+            style={{cursor:'pointer'}}
           >
             All Products
           </button>
@@ -165,6 +166,7 @@ export default function ProductsPage() {
                 'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors',
                 selectedSlug === cat.slug ? 'bg-emerald-900 text-white' : 'bg-white border text-gray-700 hover:bg-emerald-50'
               )}
+                 style={{cursor:'pointer'}}
             >
               {cat.name}
             </button>
