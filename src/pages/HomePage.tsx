@@ -192,7 +192,7 @@ function IntroSection() {
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white aspect-[4/3] bg-emerald-900">
               <img 
-                src="/public/ferti-01.jpeg" 
+                src="/ferti-01.jpeg" 
                 alt="Laboratory testing and fertilizer formulation at Campa Fertichem" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
