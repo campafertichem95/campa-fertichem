@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Phone, Mail, MapPin, Clock, CheckCircle, ExternalLink } from 'lucide-react'
 import emailjs from '@emailjs/browser'
+import { Turnstile } from '@marsidev/react-turnstile'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { supabase } from '@/lib/supabase'
 import type { Product } from '@/types/database'
 import { Button } from '@/components/ui/button'
@@ -34,6 +36,8 @@ export default function ContactPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const captchaRef = useRef<TurnstileInstance>(null)
 
   const preselectedProduct = searchParams.get('product') || ''
 
@@ -54,6 +58,10 @@ export default function ContactPage() {
 
   const onSubmit = async (data: FormData) => {
     setError(null)
+    if (!captchaToken) {
+      setError('Please complete the verification.')
+      return
+    }
     try {
       await emailjs.send(
         'service_rldmm4v',
@@ -71,6 +79,8 @@ export default function ContactPage() {
       setSubmitted(true)
     } catch {
       setError('Failed to send your enquiry. Please try again.')
+      captchaRef.current?.reset()
+      setCaptchaToken(null)
     }
   }
 
@@ -199,6 +209,12 @@ export default function ContactPage() {
                 />
                 {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>}
               </div>
+              <Turnstile
+                ref={captchaRef}
+                siteKey="0x4AAAAAAFqE31mM83PyNyx0"
+                onSuccess={token => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+              />
               {error && <p className="text-sm text-red-600 bg-red-50 rounded-md px-3 py-2">{error}</p>}
               <Button type="submit" disabled={isSubmitting} className="w-full bg-green-700 hover:bg-green-800">
                 {isSubmitting ? 'Sending...' : 'Send Enquiry'}
