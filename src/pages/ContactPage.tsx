@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Phone, Mail, MapPin, Clock, CheckCircle, ExternalLink } from 'lucide-react'
+import emailjs from '@emailjs/browser'
 import { supabase } from '@/lib/supabase'
 import type { Product } from '@/types/database'
 import { Button } from '@/components/ui/button'
@@ -53,19 +54,23 @@ export default function ContactPage() {
 
   const onSubmit = async (data: FormData) => {
     setError(null)
-    const { error: err } = await supabase.from('enquiries').insert({
-      name: data.name,
-      email: data.email,
-      phone: data.phone || null,
-      company: data.company || null,
-      product_id: data.product_id || null,
-      message: data.message,
-      status: 'new',
-    } as any)
-    if (err) {
-      setError('Failed to send your enquiry. Please try again.')
-    } else {
+    try {
+      await emailjs.send(
+        'service_rldmm4v',
+        'template_sg3wojy',
+        {
+          name: data.name,
+          email: data.email,
+          phone: data.phone || '—',
+          company: data.company || '—',
+          product: data.product_id ? (products.find(p => p.id === data.product_id)?.name ?? '—') : '—',
+          message: data.message,
+        },
+        'bQitp4adpXRr0qO6s'
+      )
       setSubmitted(true)
+    } catch {
+      setError('Failed to send your enquiry. Please try again.')
     }
   }
 
