@@ -192,15 +192,15 @@ function IntroSection() {
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white aspect-[4/3] bg-emerald-900">
               <img 
-                src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1600&q=85" 
+                src="/public/ferti-01.jpeg" 
                 alt="Laboratory testing and fertilizer formulation at Campa Fertichem" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/70 via-transparent to-transparent" />
+              {/* <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/70 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 text-white bg-emerald-950/85 backdrop-blur-md p-4 rounded-2xl border border-emerald-500/30">
                 <p className="text-xs font-semibold text-lime-300 uppercase tracking-wider">Manufacturing Excellence</p>
                 <p className="text-sm font-medium mt-0.5">Advanced liquid blending and rigorous quality control at Taloja, Navi Mumbai.</p>
-              </div>
+              </div> */}
             </div>
           </motion.div>
         </div>
@@ -311,7 +311,7 @@ function CategorySection({ categories, productCounts }: { categories: Category[]
   if (!categories.length) return null
 
   return (
-    <section className="py-24 bg-white overflow-hidden">
+    <section className="py-16 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-14">
           <div className="max-w-xl">

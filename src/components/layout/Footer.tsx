@@ -176,6 +176,7 @@ export default function Footer() {
         {/* Bottom copyright */}
         <div className="border-t border-emerald-950/80 mt-10 pt-6 text-center text-xs text-emerald-300/40">
           <p>© {new Date().getFullYear()} Campa Fertichem. All rights reserved.</p>
+          <p>design.kraftmedia@gmail.com</p>
         </div>
       </div>
 
