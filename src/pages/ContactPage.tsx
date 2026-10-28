@@ -214,6 +214,7 @@ export default function ContactPage() {
                 siteKey="0x4AAAAAAFqE31mM83PyNyx0"
                 onSuccess={token => setCaptchaToken(token)}
                 onExpire={() => setCaptchaToken(null)}
+                options={{ appearance: 'always', execution: 'render', theme: 'light' }}
               />
               {error && <p className="text-sm text-red-600 bg-red-50 rounded-md px-3 py-2">{error}</p>}
               <Button type="submit" disabled={isSubmitting} className="w-full bg-green-700 hover:bg-green-800">
